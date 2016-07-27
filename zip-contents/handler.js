@@ -3,6 +3,8 @@
 Handlers for API requests
 */
 
+var archiver = require('archiver');
+
 // A generator function for iterating the entries of an object
 function* entries(obj) {
    for (let key of Object.keys(obj)) {
@@ -12,9 +14,15 @@ function* entries(obj) {
 
 // Handle stream request
 exports.stream = function(req, res) {
-  req.body
+
+  let archive = archiver('zip');  
   for(let [path,revision] of entries(req.body)) {
     //add to zip
   }
-  res.status(201).send('BODY has map path=>Revision')
+  archive.finalize();
+
+  res.status(201)
+    .attachment('contents.zip');
+  
+  archive.pipe(res);
 }
