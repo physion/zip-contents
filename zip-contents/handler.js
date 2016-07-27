@@ -2,7 +2,8 @@
 Handlers for API requests
 */
 
-var ov = require('./ovation');
+var OV = require('./ovation');
+var RSVP = require('rsvp');
 
 
 // A generator function for iterating the entries of an object
@@ -18,14 +19,23 @@ exports.resources = function(req, res, api_url, archiver) {
   let authToken = req.get('Authorization');
 
   let zip = archiver('zip');
-  
+
+  futureStreams = [];
   for (let [path, resource_id] of entries(req.body)) {
-    zip.append(ov.getResourceStream(api_url, authToken, resource_id), {name: path});
+    let p = OV.getResourceStream(api_url, authToken, resource_id)
+      .then(function(resourceStream) {
+        zip.append(resourceStream, {
+          name: path
+        });
+      });
+
+    futureStreams.push(p);
   }
 
-  zip.finalize();
-
-  res.status(201).attachment('resources.zip'); //TODO
-
-  zip.pipe(res);
+  return RSVP.all(futureStreams)
+    .then(function(streams) {
+      zip.finalize();
+      res.status(201).attachment('resources.zip'); //TODO
+      zip.pipe(res);
+    });
 }

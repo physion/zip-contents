@@ -3,7 +3,8 @@ var expect = chai.expect;
 var sinon = require('sinon');
 var express = require('express');
 var handler = require('../zip-contents/handler');
-var ov = require('../zip-contents/ovation');
+var OV = require('../zip-contents/ovation');
+var RSVP = require('rsvp');
 
 describe('handler.js', function() {
   describe('stream', function() {
@@ -22,18 +23,20 @@ describe('handler.js', function() {
       let api_url = 'https://myapi.example.com';
 
       // Ovation
-      let resourceStream = 'resource-stream';
-      getResourceStream = this.stub(ov, 'getResourceStream')
+      let resourceStream = new RSVP.Promise(function(resolve, reject) {
+        resolve('resource-stream');
+      });
+      getResourceStream = this.stub(OV, 'getResourceStream')
         .withArgs(api_url, token, resource_id)
         .returns(resourceStream);
-      
+
 
       // Archiver
       archiver = sinon.stub();
       zip = this.mock(Zip);
       archiver.withArgs('zip').returns(zip.object);
       zip.expects('finalize').once();
-      zip.expects('append').withArgs(resourceStream, {
+      zip.expects('append').withArgs('resource-stream', {
         name: path
       }).once();
       zip.expects('pipe').once();
@@ -45,10 +48,10 @@ describe('handler.js', function() {
       req = {
         body: body,
         get: function(name) {
-          if(name === 'Authorization') {
+          if (name === 'Authorization') {
             return token;
           }
-          
+
           return null;
         }
       }
@@ -61,12 +64,11 @@ describe('handler.js', function() {
         }
       };
 
-      handler.resources(req, res, api_url, archiver);
-
-      zip.verify();
-
-      done();
-
+      handler.resources(req, res, api_url, archiver)
+        .then(() => {
+          zip.verify();
+          done();
+        });
     }));
   });
 });
