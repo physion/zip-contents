@@ -8,8 +8,9 @@ const PORT = 8080;
 var app = express();
 app.use(helmet());
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
+app.post('/api/v1/stream', function(req, res) {
+
+  res.send('BODY has map path=>Revision')
 });
 
 app.listen(PORT, function () {
