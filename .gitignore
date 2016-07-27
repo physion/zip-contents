@@ -39,3 +39,11 @@ jspm_packages
 typings/*
 
 .vscode/*
+
+.vscode/launch.json
+
+typings/index.d.ts
+
+.vscode/launch.json
+
+typings/index.d.ts

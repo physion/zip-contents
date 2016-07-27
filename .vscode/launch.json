@@ -41,6 +41,21 @@
       "port": 5858,
       "sourceMaps": false,
       "outDir": null
+    },
+    {
+      "name": "mocha",
+      "type": "node",
+      "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+      "stopOnEntry": false,
+      "args": [
+        "--no-timeouts",
+        "--colors"
+      ], //you can specify paths to specific tests here
+      "cwd": ".",
+      "runtimeExecutable": null,
+      "env": {
+        "NODE_ENV": "testing"
+      }
     }
   ]
 }
