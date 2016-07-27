@@ -2,24 +2,35 @@
   "name": "zip-contents",
   "version": "1.0.0",
   "description": "Ovation contents zip stream",
+  "private": true,
   "main": "app/app.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "node ./zip-contents/bin/www",
+    "autotest": "mocha --watch"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/physion/zip-contents.git"
   },
-  "author": "",
+  "author": "Physion LLC",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/physion/zip-contents/issues"
   },
   "homepage": "https://github.com/physion/zip-contents#readme",
   "dependencies": {
-    "express": "^4.14.0",
+    "archiver": "^1.0.0",
+    "body-parser": "~1.15.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "express": "~4.13.4",
     "helmet": "^2.1.1",
-    "s3-zip": "0.0.7"
+    "jade": "~1.11.0",
+    "morgan": "~1.7.0",
+    "promise": "^7.1.1",
+    "s3-zip": "0.0.7",
+    "serve-favicon": "~2.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
