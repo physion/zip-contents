@@ -1,61 +1,60 @@
 {
   "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Launch",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceRoot}/app/app.js",
-      "stopOnEntry": false,
-      "args": [],
-      "cwd": "${workspaceRoot}",
-      "preLaunchTask": null,
-      "runtimeExecutable": null,
-      "runtimeArgs": [
-        "--nolazy"
-      ],
-      "env": {
-        "NODE_ENV": "development"
-      },
-      "externalConsole": false,
-      "sourceMaps": false,
-      "outDir": null
+  "configurations": [{
+    "name": "Launch",
+    "type": "node",
+    "request": "launch",
+    "program": "${workspaceRoot}/app/app.js",
+    "stopOnEntry": false,
+    "args": [],
+    "cwd": "${workspaceRoot}",
+    "preLaunchTask": null,
+    "runtimeExecutable": null,
+    "runtimeArgs": [
+      "--nolazy"
+    ],
+    "env": {
+      "NODE_ENV": "development"
     },
-    {
-      "name": "Attach",
-      "type": "node",
-      "request": "attach",
-      "port": 5858,
-      "address": "localhost",
-      "restart": false,
-      "sourceMaps": false,
-      "outDir": null,
-      "localRoot": "${workspaceRoot}",
-      "remoteRoot": null
-    },
-    {
-      "name": "Attach to Process",
-      "type": "node",
-      "request": "attach",
-      "processId": "${command.PickProcess}",
-      "port": 5858,
-      "sourceMaps": false,
-      "outDir": null
-    },
-    {
-      "name": "mocha",
-      "type": "node",
-      "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-      "stopOnEntry": false,
-      "args": [
-        "--no-timeouts",
-        "--colors"
-      ], //you can specify paths to specific tests here
-      "cwd": ".",
-      "runtimeExecutable": null,
-      "env": {
-        "NODE_ENV": "testing"
-      }
+    "externalConsole": false,
+    "sourceMaps": false,
+    "outDir": null
+  }, {
+    "name": "Attach",
+    "type": "node",
+    "request": "attach",
+    "port": 5858,
+    "address": "localhost",
+    "restart": false,
+    "sourceMaps": false,
+    "outDir": null,
+    "localRoot": "${workspaceRoot}",
+    "remoteRoot": null
+  }, {
+    "name": "Attach to Process",
+    "type": "node",
+    "request": "attach",
+    "processId": "${command.PickProcess}",
+    "port": 5858,
+    "sourceMaps": false,
+    "outDir": null
+  }, {
+    // Name of configuration; appears in the launch configuration drop down menu.
+    "name": "mocha",
+    // Type of configuration. Possible values: "node", "mono".
+    "type": "node",
+    // Workspace relative or absolute path to the program.
+    "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+    // Automatically stop program after launch.
+    "stopOnEntry": false,
+    // Command line arguments passed to the program.
+    "args": ["test/"],
+    // Workspace relative or absolute path to the working directory of the program being debugged. Default is the current workspace.
+    "cwd": "${workspaceRoot}",
+    // Workspace relative or absolute path to the runtime executable to be used. Default is the runtime executable on the PATH.
+    "runtimeExecutable": null,
+    // Environment variables passed to the program.
+    "env": {
     }
-  ]
+  }]
 }
