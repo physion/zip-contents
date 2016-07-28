@@ -9,7 +9,7 @@ RSVP.on('error', function(reason) {
 var getResource = function(token, resource_url) {
   let result = new RSVP.Promise((resolve, reject) => {
     opts = {
-      url: resource_url + '?token=' + token,
+      url: resource_url, // + '?token=' + token,
       headers: {
         'Authorization': token,
         'Accept': 'application/json'

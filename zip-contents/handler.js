@@ -31,7 +31,7 @@ function bearerToken(req) {
 
 exports.resources = function(req, res, archiver) {
 
-  let authToken = bearerToken(req);
+  let authToken = req.headers.authorization; //bearerToken(req);
 
   let zip = archiver('zip');
 

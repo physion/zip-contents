@@ -24,7 +24,7 @@ describe('Ovation API wrapper', function() {
       let ov = nock(api_url)
         .matchHeader('authorization', token)
         .matchHeader('accept', 'application/json')
-        .get('/resources/' + resource_id + '?token=' + token)
+        .get('/resources/' + resource_id) // + '?token=' + token)
         .reply(200, {
           url: resource_url
         });

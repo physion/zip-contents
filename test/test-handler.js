@@ -11,6 +11,7 @@ describe('handler.js', function() {
   describe('stream', function() {
     it('should create zip stream', sinon.test(function(done) {
       let token = 'api-token';
+      let bearerToken = "Bearer "  + token;
 
       let Zip = {
         append: function(source, data) {},
@@ -27,7 +28,7 @@ describe('handler.js', function() {
         resolve('resource-stream');
       });
       getResourceStream = this.stub(OV, 'getResourceStream')
-        .withArgs(token, resource_url)
+        .withArgs(bearerToken, resource_url)
         .returns(resourceStream);
 
 
@@ -48,7 +49,7 @@ describe('handler.js', function() {
       req = {
         body: body,
         headers: {
-          authorization: "Bearer "  + token
+          authorization: bearerToken
         }
       }
 

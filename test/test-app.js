@@ -54,8 +54,8 @@ describe('Routes', function() {
         .post('/api/v1/resources')
         .set('Authorization', 'Bearer ' + 'foo')
         .send({
-          '/path/foo': 'rsrc1-id',
-          '/path/foo/bar': 'rsrc2-id'
+          '/path/foo': 'rsrc1-url',
+          '/path/foo/bar': 'rsrc2-url'
         })
         .end(function(err, res) {
           expect(res.status).to.eq(401);
