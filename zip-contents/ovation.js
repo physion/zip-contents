@@ -31,8 +31,10 @@ var getResource = function(api_url, token, resource_id) {
 var getResourceStream = function(api_url, token, resource_id) {
   let promise = getResource(api_url, token, resource_id)
     .then((resource) => {
-      let result = stream.Readable();
       let url = resource['url'];
+      
+      let result = stream.Readable();
+
       request.get(url).pipe(result);
 
       return result;
