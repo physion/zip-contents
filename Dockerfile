@@ -1,4 +1,4 @@
-FROM node:argon
+FROM node:6
 
 # Create app directory
 RUN mkdir -p /usr/src/app
@@ -13,4 +13,4 @@ COPY . /usr/src/app
 
 EXPOSE 8080
 
-CMD [ "npm", "start" ]
+CMD [ "./zip-contents/bin/www" ]

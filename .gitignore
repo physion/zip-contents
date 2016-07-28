@@ -47,3 +47,4 @@ typings/index.d.ts
 .vscode/launch.json
 
 typings/index.d.ts
+.elasticbeanstalk/
