@@ -11,6 +11,7 @@ describe('handler.js', function() {
   describe('stream', function() {
     it('should create zip stream', sinon.test(function(done) {
       let token = 'api-token';
+      let bearerToken = "Bearer "  + token;
 
       let Zip = {
         append: function(source, data) {},
@@ -20,15 +21,14 @@ describe('handler.js', function() {
 
       let path = "my/path";
       let resource_id = 1;
-
-      let api_url = 'https://myapi.example.com';
+      let resource_url = 'https://resources.example.com/' + resource_id;
 
       // Ovation
       let resourceStream = new RSVP.Promise(function(resolve, reject) {
         resolve('resource-stream');
       });
       getResourceStream = this.stub(OV, 'getResourceStream')
-        .withArgs(api_url, token, resource_id)
+        .withArgs(bearerToken, resource_url)
         .returns(resourceStream);
 
 
@@ -45,15 +45,11 @@ describe('handler.js', function() {
 
       // Express
       let body = {};
-      body[path] = resource_id
+      body[path] = resource_url
       req = {
         body: body,
-        get: function(name) {
-          if (name === 'Authorization') {
-            return token;
-          }
-
-          return null;
+        headers: {
+          authorization: bearerToken
         }
       }
 
@@ -65,7 +61,7 @@ describe('handler.js', function() {
         }
       };
 
-      handler.resources(req, res, api_url, archiver)
+      handler.resources(req, res, archiver)
         .then(() => {
           zip.verify();
           done();
