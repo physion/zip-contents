@@ -48,3 +48,8 @@ typings/index.d.ts
 
 typings/index.d.ts
 .elasticbeanstalk/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
