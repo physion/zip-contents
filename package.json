@@ -4,6 +4,9 @@
   "description": "Ovation contents zip stream",
   "private": true,
   "main": "app/app.js",
+  "engines": {
+    "node": ">=6.2.0"
+  },
   "scripts": {
     "test": "mocha",
     "start": "node ./zip-contents/bin/www",
