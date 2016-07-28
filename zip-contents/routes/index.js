@@ -5,7 +5,9 @@ var archiver = require('archiver');
 var handler = require('../handler');
 
 router.get('/health', (req,res,next) => {
-  res.status(200).send('zip-contents is alive');
+  res.status(200)
+    .contentType('application/json')
+    .send({status: 'alive'});
 });
 
 router.post('/api/v1/resources', function(req, res, next) {
