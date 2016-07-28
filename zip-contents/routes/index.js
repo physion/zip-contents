@@ -4,7 +4,7 @@ var archiver = require('archiver');
 
 var handler = require('../handler');
 
-router.get('/health', (req,res,next) => {
+router.get('/', (req,res,next) => {
   res.status(200)
     .contentType('application/json')
     .send({status: 'alive'});

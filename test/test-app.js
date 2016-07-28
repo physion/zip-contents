@@ -15,10 +15,10 @@ chai.use(chaiHttp);
 
 
 describe('Routes', function() {
-  describe('GET /health', function() {
+  describe('GET /', function() {
     it('should return 200', sinon.test(function(done) {
       chai.request(app)
-        .get('/health')
+        .get('/')
         .end((err, res) => {
           expect(res.status).to.equal(200);
           done();

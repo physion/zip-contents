@@ -30,7 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // JWT authentication
 app.use(jwt({
   secret: config.JWT_SECRET
-}).unless({path: ['/health']}));
+}).unless({path: ['/']}));
 
 app.use('/', routes);
 
