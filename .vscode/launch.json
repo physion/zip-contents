@@ -4,7 +4,7 @@
     "name": "Launch",
     "type": "node",
     "request": "launch",
-    "program": "${workspaceRoot}/app/app.js",
+    "program": "${workspaceRoot}/zip-contents/bin/www",
     "stopOnEntry": false,
     "args": [],
     "cwd": "${workspaceRoot}",
@@ -14,7 +14,8 @@
       "--nolazy"
     ],
     "env": {
-      "NODE_ENV": "development"
+      "NODE_ENV": "development",
+      "JWT_SECRET": "jwt-development"
     },
     "externalConsole": false,
     "sourceMaps": false,
