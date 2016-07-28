@@ -14,15 +14,30 @@ function* entries(obj) {
 }
 
 // Handle stream request
-exports.resources = function(req, res, api_url, archiver) {
 
-  let authToken = req.get('Authorization');
+function bearerToken(req) {
+  var parts = req.headers.authorization.split(' ');
+  if (parts.length == 2) {
+    var scheme = parts[0];
+    var credentials = parts[1];
+
+    if (/^Bearer$/i.test(scheme)) {
+      return credentials;
+    }
+  }
+
+  return null;
+}
+
+exports.resources = function(req, res, archiver) {
+
+  let authToken = bearerToken(req);
 
   let zip = archiver('zip');
 
   futureStreams = [];
-  for (let [path, resource_id] of entries(req.body)) {
-    let p = OV.getResourceStream(api_url, authToken, resource_id)
+  for (let [path, resource_url] of entries(req.body)) {
+    let p = OV.getResourceStream(authToken, resource_url)
       .then(function(resourceStream) {
         zip.append(resourceStream, {
           name: path
