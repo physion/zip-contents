@@ -24,14 +24,14 @@ describe('Ovation API wrapper', function() {
       let ov = nock(api_url)
         .matchHeader('authorization', token)
         .matchHeader('accept', 'application/json')
-        .get('/api/v1/resources/' + resource_id)
+        .get('/resources/' + resource_id) // + '?token=' + token)
         .reply(200, {
           url: resource_url
         });
 
 
 
-      OV.getResource(api_url, token, resource_id)
+      OV.getResource(token, resource_url)
         .then((resource) => {
           expect(resource["url"]).to.equal(resource_url);
           ov.done();
@@ -48,7 +48,7 @@ describe('Ovation API wrapper', function() {
 
 
 
-      OV.getResource(api_url, token, resource_id)
+      OV.getResource(token, resource_id)
         .catch((error) => {
           done();
         });

@@ -6,10 +6,10 @@ RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
-var getResource = function(api_url, token, resource_id) {
+var getResource = function(token, resource_url) {
   let result = new RSVP.Promise((resolve, reject) => {
     opts = {
-      url: api_url + '/api/v1/resources/' + resource_id,
+      url: resource_url, // + '?token=' + token,
       headers: {
         'Authorization': token,
         'Accept': 'application/json'
@@ -28,8 +28,8 @@ var getResource = function(api_url, token, resource_id) {
   return result;
 }
 
-var getResourceStream = function(api_url, token, resource_id) {
-  let promise = getResource(api_url, token, resource_id)
+var getResourceStream = function(token, resource_url) {
+  let promise = getResource(token, resource_url)
     .then((resource) => {
       let url = resource['url'];
       
