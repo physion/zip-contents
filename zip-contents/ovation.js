@@ -32,12 +32,8 @@ var getResourceStream = function(token, resource_url) {
   let promise = getResource(token, resource_url)
     .then((resource) => {
       let url = resource['url'];
-      
-      let result = stream.Readable();
 
-      request.get(url).pipe(result);
-
-      return result;
+      return request.get(url);
     });
 
     //TODO handle error in getResource
