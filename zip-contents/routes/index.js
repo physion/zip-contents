@@ -10,8 +10,12 @@ router.get('/', (req,res,next) => {
     .send({status: 'alive'});
 });
 
-router.post('/api/v1/resources', function(req, res, next) {
+router.post('/api/v1/resources', (req, res, next) => {
   handler.resources(req, res, archiver);
+});
+
+router.get('/api/v1/resource_groups/:id', (req, res, next) => {
+  handler.resource_groups(req, res, archiver);
 });
 
 module.exports = router;
