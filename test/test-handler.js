@@ -27,18 +27,12 @@ describe('handler.js', function() {
       let token = 'api-token';
       let bearerToken = "Bearer " + token;
 
-      let Zip = {
-        append: function(source, data) {},
-        finalize: function() {},
-        pipe: function(dest) {}
-      };
-
       let resource_group_id = 1;
       let resource_group_name = 'group-name';
       let resource_name = 'resource-name';
       let resource_id = 1;
 
-      let resource_url_base = 'https://resources.example.com/'; 
+      let resource_url_base = 'https://resources.example.com/';
       let resource_url = resource_url_base + resource_id;
       let services_url = config.SERVICES_API;
 
@@ -59,29 +53,16 @@ describe('handler.js', function() {
           }]
         });
 
-
-      let ovResource = nock(services_url)
-        .matchHeader('authorization', 'Bearer ' + token)
-        .matchHeader('accept', 'application/json')
-        .get('/resources/' + resource_id)
-        .reply(200, {
-          url: resource_url
-        });
-
-      let ovResourceUrl = nock(resource_url_base)
-        .get('/' + resource_id)
-        .reply(200, 'CONTENTS!');
-
+      let resourceStream = new RSVP.Promise(function(resolve, reject) {
+        resolve('resource-stream');
+      });
+      getResourceStream = this.stub(OV, 'getResourceStream')
+        .withArgs(bearerToken, resource_url)
+        .returns(resourceStream);
 
 
       // Archiver
-      archiver = sinon.stub();
-      zip = this.mock(Zip);
-      archiver.withArgs('zip').returns(zip.object);
-      zip.expects('finalize').once();
-      zip.expects('append').once();
-      zip.expects('pipe').once();
-
+      let archiver = sinon.stub();
 
       // Express
       req = {
@@ -101,11 +82,17 @@ describe('handler.js', function() {
         }
       };
 
+      // Zip
+      let expectedUrls = {};
+      expectedUrls[resource_group_name + "/" + resource_name] = resource_url;
+
+      let zip = this.stub(handler, 'zipResources')
+        .returns('done');
+ 
       handler.resource_groups(req, res, archiver)
         .then((res) => {
-          zip.verify();
+          expect(zip.called).to.be.true;
           ovGroup.done();
-          ovResource.done();
           done();
         });
     }));
