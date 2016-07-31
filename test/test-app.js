@@ -15,6 +15,9 @@ chai.use(chaiHttp);
 
 
 describe('Routes', function() {
+  
+  let token = jwt.sign({}, config.JWT_SECRET);
+
   describe('GET /', function() {
     it('should return 200', sinon.test(function(done) {
       chai.request(app)
@@ -26,9 +29,24 @@ describe('Routes', function() {
     }));
   });
 
-  describe('POST /api/v1/resources', function() {
-    let token = jwt.sign({}, config.JWT_SECRET);
+  describe('GET /api/v1/resource_groups/:id', function() {
+    it('should call handler.resource_groups', sinon.test(function(done) {
+      var resource_groups = this.stub(handler, 'resource_groups', (req, res, archiver) => {
+        res.status(200).send('ZIP');
+      });
 
+      chai.request(app)
+        .get('/api/v1/resource_groups/1')
+        .set('Authorization', 'Bearer ' + token)
+        .end(function(err, res) {
+          expect(resource_groups).to.have.been.called;
+          done();
+        });
+    }));
+  });
+
+  describe('POST /api/v1/resources', function() {
+    
     it('should call handler.resources', sinon.test(function(done) {
       var resources = this.stub(handler, 'resources', (req, res, archiver) => {
         res.status(201).send('ZIP');

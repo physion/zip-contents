@@ -6,12 +6,103 @@ var express = require('express');
 var handler = require('../zip-contents/handler');
 var OV = require('../zip-contents/ovation');
 var RSVP = require('rsvp');
+var config = require('../zip-contents/config');
+
+RSVP.on('error', function(reason) {
+  console.log("Error: " + reason);
+});
 
 describe('handler.js', function() {
-  describe('stream', function() {
+
+  afterEach(() => {
+    sinon.restore
+  });
+
+  beforeEach(() => {
+    nock.cleanAll();
+  })
+
+  describe('resource_groups', function() {
+    it('should create a zip stream', sinon.test(function(done) {
+      let token = 'api-token';
+      let bearerToken = "Bearer " + token;
+
+      let resource_group_id = 1;
+      let resource_group_name = 'group-name';
+      let resource_name = 'resource-name';
+      let resource_id = 1;
+
+      let services_url = config.SERVICES_API;
+      let resource_url = services_url + "/resources/" + resource_id
+      
+
+      // Ovation
+      let ovGroup = nock(services_url)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get('/api/v1/resource_groups/' + resource_group_id)
+        .reply(200, {
+          resource_group: {
+            name: resource_group_name,
+            id: resource_group_id,
+            resources: [resource_id]
+          },
+          resources: [{
+            name: resource_name,
+            url: services_url + "/resources/" + resource_id
+          }]
+        });
+
+      let resourceStream = new RSVP.Promise(function(resolve, reject) {
+        resolve('resource-stream');
+      });
+      getResourceStream = this.stub(OV, 'getResourceStream')
+        .withArgs(bearerToken, resource_url)
+        .returns(resourceStream);
+
+
+      // Archiver
+      let archiver = sinon.stub();
+
+      // Express
+      req = {
+        params: {
+          id: resource_group_id
+        },
+        headers: {
+          authorization: bearerToken
+        }
+      }
+
+      res = {
+        status: function(code) {
+          return {
+            attachment: function(n) {}
+          }
+        }
+      };
+
+      // Zip
+      let expectedUrls = {};
+      let expectedPath = "/" + resource_group_name + "/" + resource_name;
+      expectedUrls[expectedPath] = resource_url;
+
+      let zip = this.stub(handler, 'zipResources')
+        .returns('done');
+ 
+      handler.resource_groups(req, res, archiver)
+        .then((res) => {
+          expect(zip.firstCall.args[1][expectedPath]).to.equal(resource_url);
+          ovGroup.done();
+          done();
+        });
+    }));
+  });
+
+  describe('resources', function() {
     it('should create zip stream', sinon.test(function(done) {
       let token = 'api-token';
-      let bearerToken = "Bearer "  + token;
+      let bearerToken = "Bearer " + token;
 
       let Zip = {
         append: function(source, data) {},
