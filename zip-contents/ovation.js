@@ -55,15 +55,17 @@ var exp = {
   },
 
   getResourceGroupUrls(token, api_url, id) {
-    let urls = {}
-    let groupName = null;
+    return exp.getResourceGroupUrlsRec(token, api_url, id, '');
+  },
 
+  getResourceGroupUrlsRec(token, api_url, id, path) {
     return exp.getResourceGroup(token, api_url, id)
       .then((response) => {
-        groupName = response.resource_group.name;
+        let groupName = response.resource_group.name;
+        let urls = {};
 
         for (resource of response.resources) {
-          urls[groupName + "/" + resource.name] = resource.url;
+          urls[[path, groupName, resource.name].join('/')] = resource.url;
         }
 
         let children = response.resource_group.resource_groups;

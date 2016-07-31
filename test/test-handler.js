@@ -32,9 +32,9 @@ describe('handler.js', function() {
       let resource_name = 'resource-name';
       let resource_id = 1;
 
-      let resource_url_base = 'https://resources.example.com/';
-      let resource_url = resource_url_base + resource_id;
       let services_url = config.SERVICES_API;
+      let resource_url = services_url + "/resources/" + resource_id
+      
 
       // Ovation
       let ovGroup = nock(services_url)
@@ -84,14 +84,15 @@ describe('handler.js', function() {
 
       // Zip
       let expectedUrls = {};
-      expectedUrls[resource_group_name + "/" + resource_name] = resource_url;
+      let expectedPath = "/" + resource_group_name + "/" + resource_name;
+      expectedUrls[expectedPath] = resource_url;
 
       let zip = this.stub(handler, 'zipResources')
         .returns('done');
  
       handler.resource_groups(req, res, archiver)
         .then((res) => {
-          expect(zip.called).to.be.true;
+          expect(zip.firstCall.args[1][expectedPath]).to.equal(resource_url);
           ovGroup.done();
           done();
         });
