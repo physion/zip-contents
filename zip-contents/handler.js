@@ -71,6 +71,20 @@ var handler = {
 
         return handler.zipResources(authToken, urls, archiver, res);
       });
+  },
+
+  activities(req, res, archiver) {
+    let authToken = req.headers.authorization;
+
+    return OV.getActivityUrls(authToken, config.OR_API_URL, req.params.id)
+      .then((result) => {
+        let activity = result.activity;
+        let urls = result.urls;
+
+        res.status(200).attachment(activity.attributes.name + '.zip');
+
+        return handler.zipResources(authToken, urls, archiver, res);
+      })
   }
 };
 
