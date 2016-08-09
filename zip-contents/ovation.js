@@ -82,7 +82,6 @@ var exp = {
           actions: exp.getActivityResourceUrls(token, api_url, activity, 'actions'),
         })
       }).then((result) => {
-        console.info('urls');
         let urls = {};
 
         urls = util.update(urls, result.inputs);
