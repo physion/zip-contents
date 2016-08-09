@@ -54,7 +54,7 @@ describe('handler.js', function() {
             attributes: {
               name: "myactivity"
             },
-            links: {
+            relationships: {
               inputs: {
                 related: inputsPath
               },

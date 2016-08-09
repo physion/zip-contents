@@ -54,7 +54,7 @@ var exp = {
   },
 
   getActivityResourceUrls(token, api_url, activity, rel) {
-    let relUrl = api_url + activity.links[rel].related;
+    let relUrl = api_url + activity.relationships[rel].related;
     let opts = exp.getServiceApiOpts(token, relUrl);
 
     return exp.getSerivceApi(opts)
@@ -82,6 +82,7 @@ var exp = {
           actions: exp.getActivityResourceUrls(token, api_url, activity, 'actions'),
         })
       }).then((result) => {
+        console.info('urls');
         let urls = {};
 
         urls = util.update(urls, result.inputs);
