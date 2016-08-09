@@ -15,7 +15,7 @@ chai.use(chaiHttp);
 
 
 describe('Routes', function() {
-  
+
   let token = jwt.sign({}, config.JWT_SECRET);
 
   describe('GET /', function() {
@@ -45,8 +45,24 @@ describe('Routes', function() {
     }));
   });
 
+  describe('GET /api/v1/activities/:id', function() {
+    it('should call handler.activities', sinon.test(function(done) {
+      var activities = this.stub(handler, 'activities', (req, res, archiver) => {
+        res.status(200).send('ZIP');
+      });
+
+      chai.request(app)
+        .get('/api/v1/activities/1')
+        .set('Authorization', 'Bearer ' + token)
+        .end(function(err, res) {
+          expect(activities).to.have.been.called;
+          done();
+        });
+    }));
+  });
+
   describe('POST /api/v1/resources', function() {
-    
+
     it('should call handler.resources', sinon.test(function(done) {
       var resources = this.stub(handler, 'resources', (req, res, archiver) => {
         res.status(201).send('ZIP');
