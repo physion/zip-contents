@@ -18,4 +18,8 @@ router.get('/api/v1/resource_groups/:id', (req, res, next) => {
   handler.resource_groups(req, res, archiver);
 });
 
+router.get('/api/v1/activities/:id', (req, res, next) => {
+  handler.activities(req, res, archiver);
+});
+
 module.exports = router;
