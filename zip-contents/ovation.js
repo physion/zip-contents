@@ -14,7 +14,6 @@ var exp = {
       }
     };
 
-    // console.log(opts);
     return opts;
   },
 
@@ -52,6 +51,48 @@ var exp = {
     let opts = exp.getServiceApiOpts(token, groupUrl);
 
     return exp.getSerivceApi(opts);
+  },
+
+  getActivityResourceUrls(token, api_url, activity, rel) {
+    let relUrl = api_url + activity.links[rel].related;
+    let opts = exp.getServiceApiOpts(token, relUrl);
+
+    return exp.getSerivceApi(opts)
+      .then((related) => {
+        let urls = {};
+        for (target of related[rel]) {
+          urls['/' + rel + '/' + target.attributes.name] = target.attributes.url;
+        }
+
+        return urls;
+      })
+  },
+
+  getActivityUrls(token, api_url, id) {
+    let activityUrl = api_url + '/api/v1/activities/' + id;
+    let opts = exp.getServiceApiOpts(token, activityUrl);
+
+    return exp.getSerivceApi(opts)
+      .then((response) => {
+        let activity = response.activity;
+        return RSVP.hash({
+          activity: activity,
+          inputs: exp.getActivityResourceUrls(token, api_url, activity, 'inputs'),
+          outputs: exp.getActivityResourceUrls(token, api_url, activity, 'outputs'),
+          actions: exp.getActivityResourceUrls(token, api_url, activity, 'actions'),
+        })
+      }).then((result) => {
+        let urls = {};
+
+        urls = util.update(urls, result.inputs);
+        urls = util.update(urls, result.outputs);
+        urls = util.update(urls, result.actions);
+
+        return {
+          activity: result.activity,
+          urls: urls
+        }
+      });
   },
 
   getResourceGroupUrls(token, api_url, id) {

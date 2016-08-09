@@ -7,6 +7,7 @@ var handler = require('../zip-contents/handler');
 var OV = require('../zip-contents/ovation');
 var RSVP = require('rsvp');
 var config = require('../zip-contents/config');
+var util = require('../zip-contents/util');
 
 RSVP.on('error', function(reason) {
   console.log("Error: " + reason);
@@ -20,7 +21,141 @@ describe('handler.js', function() {
 
   beforeEach(() => {
     nock.cleanAll();
-  })
+  });
+
+  describe('activities', function() {
+    it('should zip activity contents', sinon.test(function(done) {
+      let token = 'api-token';
+      let bearerToken = "Bearer " + token;
+
+      let apiUrl = config.OR_API_URL;
+      let activityId = 1;
+
+      let inputsPath = '/api/v1/inputs/' + activityId;
+      let outputsPath = '/api/v1/outputs/' + activityId;
+      let actionsPath = '/api/v1/actions/' + activityId;
+
+      let inputUrl = 'input-resource';
+      let outputUrl = 'output-resource';
+      let actionUrl = 'action-resource';
+
+      let inputName = 'input-name';
+      let outputName = 'output-name';
+      let actionName = 'action-name';
+
+
+      let ovActivity = nock(apiUrl)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get('/api/v1/activities/' + activityId)
+        .reply(200, {
+          activity: {
+            _id: activityId,
+            attributes: {
+              name: "myactivity"
+            },
+            links: {
+              inputs: {
+                related: inputsPath
+              },
+              outputs: {
+                related: outputsPath
+              },
+              actions: {
+                related: actionsPath
+              }
+            }
+          }
+        });
+
+      let ovInputs = nock(apiUrl)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get(inputsPath)
+        .reply(200, {
+          inputs: [{
+            attributes: {
+              url: inputUrl,
+              name: inputName
+            }
+          }]
+        });
+
+      let ovOutputs = nock(apiUrl)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get(outputsPath)
+        .reply(200, {
+          outputs: [{
+            attributes: {
+              url: outputUrl,
+              name: outputName
+            }
+          }]
+        });
+
+      let ovActions = nock(apiUrl)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get(actionsPath)
+        .reply(200, {
+          actions: [{
+            attributes: {
+              url: actionUrl,
+              name: actionName
+            }
+          }]
+        });
+
+      // Express
+      req = {
+        params: {
+          id: activityId
+        },
+        headers: {
+          authorization: bearerToken
+        }
+      }
+
+      res = {
+        status: function(code) {
+          return {
+            attachment: function(n) {}
+          }
+        }
+      };
+
+      // Archiver
+      let archiver = sinon.stub();
+
+      // Zip
+      let expectedUrls = {};
+      expectedUrls['/inputs/' + inputName] = inputUrl;
+      expectedUrls['/outputs/' + outputName] = outputUrl;
+      expectedUrls['/actions/' + actionName] = actionUrl;
+
+      let zip = this.stub(handler, 'zipResources')
+        .returns('done');
+
+      handler.activities(req, res, archiver)
+        .then((res) => {
+          let args = zip.firstCall.args[1];
+          for(let [k,v] of util.entries(args)) {
+            expect(expectedUrls[k]).to.equal(v);
+          } 
+
+          ovInputs.done();
+          ovOutputs.done();
+          ovActions.done();
+          done();
+        })
+        .catch((err) => {
+          console.write("Error: " + err);
+          done();
+        });
+
+    }));
+  });
 
   describe('resource_groups', function() {
     it('should create a zip stream', sinon.test(function(done) {
@@ -34,7 +169,7 @@ describe('handler.js', function() {
 
       let services_url = config.SERVICES_API;
       let resource_url = services_url + "/resources/" + resource_id
-      
+
 
       // Ovation
       let ovGroup = nock(services_url)
@@ -89,7 +224,7 @@ describe('handler.js', function() {
 
       let zip = this.stub(handler, 'zipResources')
         .returns('done');
- 
+
       handler.resource_groups(req, res, archiver)
         .then((res) => {
           expect(zip.firstCall.args[1][expectedPath]).to.equal(resource_url);
