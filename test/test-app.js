@@ -61,6 +61,22 @@ describe('Routes', function() {
     }));
   });
 
+  describe('GET /api/v1/folders/:id', function() {
+    it('should call handler.folders', sinon.test(function(done) {
+      var activities = this.stub(handler, 'folders', (req, res, archiver) => {
+        res.status(200).send('ZIP');
+      });
+
+      chai.request(app)
+        .get('/api/v1/folders/1')
+        .set('Authorization', 'Bearer ' + token)
+        .end(function(err, res) {
+          expect(activities).to.have.been.called;
+          done();
+        });
+    }));
+  });
+
   describe('POST /api/v1/resources', function() {
 
     it('should call handler.resources', sinon.test(function(done) {

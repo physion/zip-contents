@@ -140,13 +140,199 @@ describe('handler.js', function() {
       handler.activities(req, res, archiver)
         .then((res) => {
           let args = zip.firstCall.args[1];
-          for(let [k,v] of util.entries(args)) {
+          for (let [k, v] of util.entries(args)) {
             expect(expectedUrls[k]).to.equal(v);
-          } 
+          }
 
           ovInputs.done();
           ovOutputs.done();
           ovActions.done();
+          done();
+        })
+        .catch((err) => {
+          console.write("Error: " + err);
+          done();
+        });
+
+    }));
+  });
+
+  describe('folders', function() {
+    it('should zip folder contents', sinon.test(function(done) {
+      let token = 'api-token';
+      let bearerToken = "Bearer " + token;
+
+      let apiUrl = config.OR_API_URL;
+      let folderId = 1;
+      let subFolderId = 2;
+
+      let filesPath = '/api/v1/files/' + folderId;
+      let foldersPath = '/api/v1/folders/' + folderId;
+      let subFilesPath = '/api/v1/files/' + subFolderId;
+      let subFoldersPath = '/api/v1/folders' + subFolderId;
+      let headsPath = '/api/v1/files/heads';
+      let subHeadsPath = '/api/v1/files/heads';
+
+      let fileUrl = 'file-resource';
+      let subFileUrl = 'subfile-resource';
+
+      let fileName = 'file-name';
+      let subFileName = 'subfile-name';
+
+
+      let ovFolder = nock(apiUrl)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get('/api/v1/folders/' + folderId)
+        .reply(200, {
+          folder: {
+            _id: folderId,
+            attributes: {
+              name: "folder"
+            },
+            relationships: {
+              files: {
+                related: filesPath
+              },
+              folders: {
+                related: foldersPath
+              },
+            }
+          }
+        });
+
+      let ovFiles = nock(apiUrl)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get(filesPath)
+        .reply(200, {
+          files: [{
+            _id: 'file-id',
+            attributes: {
+              name: fileName
+            },
+            links: {
+              heads: headsPath
+            }
+          }]
+        });
+
+      let ovHeads = nock(apiUrl)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get(headsPath)
+        .reply(200, {
+          revisions: [{
+            _id: 'rev-id',
+            attributes: {
+              name: fileName,
+              url: fileUrl
+            }
+          }]
+        });
+
+      let ovFolders = nock(apiUrl)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get(foldersPath)
+        .reply(200, {
+          folders: [{
+            attributes: {
+              name: "subfolder"
+            },
+            relationships: {
+              files: {
+                related: subFilesPath
+              },
+              folders: {
+                related: subFoldersPath
+              },
+            }
+          }]
+        });
+
+      let ovSubFolders = nock(apiUrl)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get(subFoldersPath)
+        .reply(200, {
+          folders: []
+        });
+
+      let ovSubFiles = nock(apiUrl)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get(subFilesPath)
+        .reply(200, {
+          files: [{
+            _id: 'sub-file-id',
+            attributes: {
+              name: subFileName
+            },
+            links: {
+              heads: subHeadsPath
+            }
+          }]
+        });
+
+      let ovSubHeads = nock(apiUrl)
+        .matchHeader('authorization', 'Bearer ' + token)
+        .matchHeader('accept', 'application/json')
+        .get(subHeadsPath)
+        .reply(200, {
+          revisions: [{
+            _id: 'rev-id',
+            attributes: {
+              name: subFileName,
+              url: subFileUrl
+            }
+          }]
+        });
+
+      // Express
+      req = {
+        params: {
+          id: folderId
+        },
+        headers: {
+          authorization: bearerToken
+        }
+      }
+
+      res = {
+        status: function(code) {
+          return {
+            attachment: function(n) {}
+          }
+        }
+      };
+
+      // Archiver
+      let archiver = sinon.stub();
+
+      // Zip
+      let expectedUrls = {};
+      expectedUrls['/folder/' + fileName] = fileUrl;
+      expectedUrls['/folder/subfolder/' + subFileName] = subFileUrl;
+
+      let zip = this.stub(handler, 'zipResources')
+        .returns('done');
+
+      handler.folders(req, res, archiver)
+        .then((res) => {
+          let args = zip.firstCall.args[1];
+          for (let [k, v] of util.entries(args)) {
+            expect(expectedUrls[k]).to.equal(v);
+          }
+
+          ovFolder.done();
+          ovFiles.done();
+          ovHeads.done();
+          ovFolders.done();
+          ovSubFolders.done();
+          ovSubFiles.done();
+          ovSubHeads.done();
+
           done();
         })
         .catch((err) => {

@@ -54,7 +54,7 @@ var handler = {
     let name = (req.params && req.params.name) ? req.params.name : 'resources';
 
     res.status(201).attachment(name + '.zip');
-    
+
     return handler.zipResources(authToken, req.body, archiver, res);
 
   },
@@ -66,7 +66,7 @@ var handler = {
       .then((result) => {
         groupName = result.groupName;
         urls = result.urls;
-        
+
         res.status(201).attachment(groupName + '.zip');
 
         return handler.zipResources(authToken, urls, archiver, res);
@@ -82,6 +82,20 @@ var handler = {
         let urls = result.urls;
 
         res.status(200).attachment(activity.attributes.name + '.zip');
+
+        return handler.zipResources(authToken, urls, archiver, res);
+      })
+  },
+
+  folders(req, res, archiver) {
+    let authToken = req.headers.authorization;
+
+    return OV.getFolderUrls(authToken, config.OR_API_URL, req.params.id)
+      .then((result) => {
+        let folder = result.folder;
+        let urls = result.urls;
+
+        res.status(200).attachment(folder.attributes.name + '.zip');
 
         return handler.zipResources(authToken, urls, archiver, res);
       })
