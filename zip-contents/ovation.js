@@ -95,6 +95,75 @@ var exp = {
       });
   },
 
+  getFolderUrls(token, api_url, id) {
+    let folderUrl = api_url + '/api/v1/folders/' + id;
+    let opts = exp.getServiceApiOpts(token, folderUrl);
+
+    return exp.getSerivceApi(opts)
+      .then((folder) => {
+        let urls = exp.getContentsUrls(token, api_url, folder.folder, '');
+        return RSVP.hash({
+          folder: folder.folder,
+          urls: urls
+        });
+      });
+  },
+
+  getContentsUrls(token, api_url, folder, path) {
+    let filesUrl = api_url + folder.relationships.files.related;
+    let foldersUrl = api_url + folder.relationships.folders.related;
+
+    let foldersOpts = exp.getServiceApiOpts(token, foldersUrl);
+    let folders = exp.getSerivceApi(foldersOpts)
+
+    let filesOpts = exp.getServiceApiOpts(token, filesUrl);
+    let files = exp.getSerivceApi(filesOpts);
+
+    urls = {};
+
+    let currentPath = path + '/' + folder.attributes.name;
+
+    return RSVP.hash({
+        files,
+        folders
+      })
+      .then((contents) => {
+        let heads = contents.files.files.map((f) => {
+          let opts = exp.getServiceApiOpts(token, api_url + f.links.heads);
+          return exp.getSerivceApi(opts);
+        });
+
+        let revUpdates = RSVP.all(heads).then((allHeads) => {
+          for (let headRevs of allHeads) {
+            if (headRevs.revisions.length > 0) {
+              let rev = headRevs.revisions[0];
+              urls[currentPath + '/' + rev.attributes.name] = rev.attributes.url;
+            }
+          }
+        });
+
+        let subfolders = contents.folders.folders.map((f) => {
+          return exp.getContentsUrls(token, api_url, f, currentPath);
+        });
+
+        let subFolderUpdates = RSVP.all(subfolders).then((subs) => {
+          for (let subFolderUrls of subs) {
+            urls = util.update(urls, subFolderUrls);
+          }
+
+          return urls;
+        });
+
+
+        return RSVP.hash({
+          revUpdates,
+          subFolderUpdates
+        }).then((updates) => {
+          return urls;
+        })
+      });
+  },
+
   getResourceGroupUrls(token, api_url, id) {
     return exp.getResourceGroupUrlsRec(token, api_url, id, '');
   },
