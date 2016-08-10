@@ -61,7 +61,9 @@ var exp = {
       .then((related) => {
         let urls = {};
         for (target of related[rel]) {
-          urls['/' + rel + '/' + target.attributes.name] = target.attributes.url;
+          if (target.type === 'Revision') {
+            urls['/' + rel + '/' + target.attributes.name] = target.attributes.url;
+          }
         }
 
         return urls;
