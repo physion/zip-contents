@@ -24,6 +24,10 @@ router.get('/api/v1/activities/:id', (req, res, next) => {
 
 router.get('/api/v1/folders/:id', (req, res, next) => {
   handler.folders(req, res, archiver);
-})
+});
+
+router.post('/api/v1/folders/:id', (req, res, next) => {
+  handler.folders(req, res, archiver);
+});
 
 module.exports = router;
