@@ -45,6 +45,18 @@ describe('Routes', function() {
     }));
   });
 
+  describe('OPTIONS /api/v1/activities/:id', function() {
+    it('should respond to options call', sinon.test(function(done) {
+      chai.request(app)
+        .options('/api/v1/activities/1')
+        .set('Authorization', 'Bearer ' + token)
+        .end(function(err,res) {
+          expect(res.statusCode).to.equal(204);
+          done();
+        })
+    }));
+  });
+
   describe('GET /api/v1/activities/:id', function() {
     it('should call handler.activities', sinon.test(function(done) {
       var activities = this.stub(handler, 'activities', (req, res, archiver) => {
@@ -58,6 +70,34 @@ describe('Routes', function() {
           expect(activities).to.have.been.called;
           done();
         });
+    }));
+  });
+
+  describe('POST /api/v1/activities/:id', function() {
+    it('should call handler.activities', sinon.test(function(done) {
+      var activities = this.stub(handler, 'activities', (req, res, archiver) => {
+        res.status(200).send('ZIP');
+      });
+
+      chai.request(app)
+        .post('/api/v1/activities/1')
+        .set('Authorization', 'Bearer ' + token)
+        .end(function(err, res) {
+          expect(activities).to.have.been.called;
+          done();
+        });
+    }));
+  });
+
+  describe('OPTIONS /api/v1/folders/:id', function() {
+    it('should respond to options call', sinon.test(function(done) {
+      chai.request(app)
+        .options('/api/v1/folders/1')
+        .set('Authorization', 'Bearer ' + token)
+        .end(function(err,res) {
+          expect(res.statusCode).to.equal(204);
+          done();
+        })
     }));
   });
 
@@ -77,7 +117,7 @@ describe('Routes', function() {
     }));
   });
 
-    describe('POST /api/v1/folders/:id', function() {
+  describe('POST /api/v1/folders/:id', function() {
     it('should call handler.folders', sinon.test(function(done) {
       var activities = this.stub(handler, 'folders', (req, res, archiver) => {
         res.status(200).send('ZIP');
