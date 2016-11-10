@@ -108,6 +108,8 @@ var exp = {
           folder: folder.folder,
           urls: urls
         });
+      }).catch(function(err) {
+        raise;
       });
   },
 
