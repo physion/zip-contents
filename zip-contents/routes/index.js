@@ -21,19 +21,19 @@ router.get('/api/v1/resource_groups/:id', (req, res, next) => {
 });
 
 router.options('/api/v1/activities/:id', cors());
-router.get('/api/v1/activities/:id', (req, res, next) => {
+router.get('/api/v1/activities/:id', cors(), (req, res, next) => {
   handler.activities(req, res, archiver);
 });
-router.post('/api/v1/activities/:id', (req, res, next) => {
+router.post('/api/v1/activities/:id', cors(), (req, res, next) => {
   handler.activities(req, res, archiver);
 });
 
 
 router.options('/api/v1/folders/:id', cors());
-router.get('/api/v1/folders/:id', (req, res, next) => {
+router.get('/api/v1/folders/:id', cors(), (req, res, next) => {
   handler.folders(req, res, archiver);
 });
-router.post('/api/v1/folders/:id', (req, res, next) => {
+router.post('/api/v1/folders/:id', cors(), (req, res, next) => {
   handler.folders(req, res, archiver);
 });
 
