@@ -28,6 +28,8 @@ var handler = {
   zipResources(token, urls, archiver, dest) {
     let zip = archiver('zip');
 
+    zip.pipe(dest);
+    
     futureStreams = [];
     for (let [path, resource_url] of util.entries(urls)) {
       let p = OV.getResourceStream(token, resource_url)
@@ -43,7 +45,6 @@ var handler = {
     return RSVP.all(futureStreams)
       .then(function(streams) {
         zip.finalize();
-        zip.pipe(dest);
       });
   },
 
