@@ -37,6 +37,9 @@ var handler = {
           zip.append(resourceStream, {
             name: path
           });
+        })
+        .catch((err) => {
+          //TODO — raygun missing resource
         });
 
       futureStreams.push(p);
