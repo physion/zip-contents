@@ -69,6 +69,16 @@ describe('Ovation API wrapper', sinon.test(function() {
         });
     }));
 
+    it('should handle remote URLs [#136523379]', sinon.test(function(done) {
+      let resource_url = 'https://www.example.com/remote-url';
+      
+      OV.getResource(token, resource_url)
+        .then((resource) => {
+          expect(resource["url"]).to.equal(resource_url);
+          done();
+        });
+    }));
+
     it('should reject on http error', sinon.test(function(done) {
       let ov = nock(api_url)
         .matchHeader('authorization', token)
@@ -78,7 +88,7 @@ describe('Ovation API wrapper', sinon.test(function() {
 
 
 
-      OV.getResource(token, resource_id)
+      OV.getResource(token, 'https://services.ovation.io/resources/' + resource_id)
         .catch((error) => {
           done();
         });
