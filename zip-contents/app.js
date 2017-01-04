@@ -6,7 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var helmet = require('helmet');
 var jwt = require('express-jwt');
-var config = require('./config')
+var config = require('./config');
+var cors = require('cors');
 
 var routes = require('./routes/index');
 
@@ -26,6 +27,9 @@ app.use(bodyParser.urlencoded({
 app.use(helmet());
 // app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//enable CORS
+app.use(cors());
 
 // JWT authentication
 app.use(jwt({
