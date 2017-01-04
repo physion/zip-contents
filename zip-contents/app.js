@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(helmet());
-// app.use(cookieParser());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //enable CORS
