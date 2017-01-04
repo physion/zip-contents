@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var helmet = require('helmet');
 var jwt = require('express-jwt');
 var config = require('./config');
+var cors = require('cors');
 
 var routes = require('./routes/index');
 
@@ -36,11 +37,10 @@ app.use(jwt({
   getToken: function fromHeaderOrQuerystring (req) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
         return req.headers.authorization.split(' ')[1];
-    } else if (req.query && req.query.token) {
-      return req.query.token;
-    } else if (req.cookies.ovation_id_token) {
+    } else if (req.cookies && req.cookies.ovation_id_token) {
       return req.cookies.ovation_id_token;
     }
+
     return null;
   }
 }).unless({path: ['/']}));
