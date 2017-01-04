@@ -3,6 +3,7 @@ var stream = require('stream');
 var RSVP = require('rsvp');
 var config = require('./config');
 var util = require('./util')
+var url = require('url');
 
 var exp = {
   getServiceApiOpts(token, url) {
@@ -31,8 +32,16 @@ var exp = {
   },
 
   getResource(token, resource_url) {
-    let opts = exp.getServiceApiOpts(token, resource_url);
-    return exp.getSerivceApi(opts);
+    //TODO handle remote url by returning {'url': resource_url}
+    parsed_url = url.parse(resource_url, true, true);
+    if(parsed_url.hostname.indexOf('ovation.io') != -1) { // internal ovation URL
+      let opts = exp.getServiceApiOpts(token, resource_url);
+      return exp.getSerivceApi(opts);
+    } else { 
+      return new RSVP.Promise((resolve, reject) => {
+        resolve({'url': resource_url});
+      })
+    }
   },
 
   getResourceStream(token, resource_url) {
