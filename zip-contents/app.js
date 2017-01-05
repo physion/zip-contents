@@ -8,6 +8,7 @@ var helmet = require('helmet');
 var jwt = require('express-jwt');
 var config = require('./config');
 var cors = require('cors');
+var util = require('./util');
 
 var routes = require('./routes/index');
 
@@ -34,14 +35,8 @@ app.use(cors());
 // JWT authentication
 app.use(jwt({
   secret: config.JWT_SECRET,
-  getToken: function fromHeaderOrQuerystring (req) {
-    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-        return req.headers.authorization.split(' ')[1];
-    } else if (req.cookies && req.cookies.ovation_id_token) {
-      return req.cookies.ovation_id_token;
-    }
-
-    return null;
+  getToken: function (req) {
+    return util.getRequestToken(req);
   }
 }).unless({path: ['/']}));
 

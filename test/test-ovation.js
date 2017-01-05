@@ -11,7 +11,7 @@ var OV = require('../zip-contents/ovation');
 describe('Ovation API wrapper', sinon.test(function() {
 
   let api_url = 'https://services.ovation.io';
-  let token = 'api-token';
+  let token = 'Bearer api-token';
 
   afterEach(function() {
     nock.cleanAll();
