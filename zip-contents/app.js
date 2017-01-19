@@ -6,7 +6,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var helmet = require('helmet');
 var jwt = require('express-jwt');
-var config = require('./config')
+var config = require('./config');
+var cors = require('cors');
+var util = require('./util');
 
 var routes = require('./routes/index');
 
@@ -24,12 +26,18 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(helmet());
-// app.use(cookieParser());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//enable CORS
+app.use(cors());
 
 // JWT authentication
 app.use(jwt({
-  secret: config.JWT_SECRET
+  secret: config.JWT_SECRET,
+  getToken: function (req) {
+    return util.getRequestToken(req);
+  }
 }).unless({path: ['/']}));
 
 app.use('/', routes);

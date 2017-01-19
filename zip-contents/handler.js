@@ -53,7 +53,7 @@ var handler = {
 
   resources(req, res, archiver) {
 
-    let authToken = req.headers.authorization;
+    let authToken = 'Bearer ' + util.getRequestToken(req);
 
     let name = (req.params && req.params.name) ? req.params.name : 'resources';
 
@@ -64,7 +64,7 @@ var handler = {
   },
 
   resource_groups(req, res, archiver) {
-    let authToken = req.headers.authorization;
+    let authToken = 'Bearer ' + util.getRequestToken(req);
 
     return OV.getResourceGroupUrls(authToken, config.SERVICES_API, req.params.id)
       .then((result) => {
@@ -78,7 +78,7 @@ var handler = {
   },
 
   activities(req, res, archiver) {
-    let authToken = req.headers.authorization;
+    let authToken = 'Bearer ' + util.getRequestToken(req);
 
     return OV.getActivityUrls(authToken, config.OR_API_URL, req.params.id)
       .then((result) => {
@@ -92,7 +92,7 @@ var handler = {
   },
 
   folders(req, res, archiver) {
-    let authToken = req.headers.authorization;
+    let authToken = 'Bearer ' + util.getRequestToken(req);
 
     return OV.getFolderUrls(authToken, config.OR_API_URL, req.params.id)
       .then((result) => {
